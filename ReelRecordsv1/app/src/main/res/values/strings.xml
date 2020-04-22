@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ReelRecords</string>
+    <string name="username">username</string>
+    <string name="password">password</string>
+    <string name="sign_up">sign up</string>
+    <string name="sign_in">sign in</string>
+</resources>
