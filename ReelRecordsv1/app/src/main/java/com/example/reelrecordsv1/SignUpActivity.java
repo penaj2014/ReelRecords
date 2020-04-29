@@ -1,10 +1,13 @@
 package com.example.reelrecordsv1;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -21,15 +24,29 @@ public class SignUpActivity extends AppCompatActivity {
         confirmPassword = (TextView)findViewById(R.id.confirmPassword);
     }
 
-    public void signUpPage(View view){
-        if(password.getText().toString() == confirmPassword.getText().toString()) {
+    public void signUp(View view){
+        String c, p;
+        p = password.getText().toString();
+        c = confirmPassword.getText().toString();
+        if(c.equals(p)) {
             //add log in info to LocalDB
             LocalDB.createAccount(username.getText().toString(), password.getText().toString());
+            //alert passwords are correct
+            Context context = getApplicationContext();
+            CharSequence text = "Success!";
+            int duration = Toast.LENGTH_SHORT;
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
             //allow entry into account
-            Intent intent = new Intent(this, QueryActivity.class);
-            String message = username.getText().toString();
-            intent.putExtra(EXTRA_MESSAGE, message);
+            Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+        } else {
+            //alert passwords are not correct
+            Context context = getApplicationContext();
+            CharSequence text = "Passwords do not match!";
+            int duration = Toast.LENGTH_SHORT;
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
         }
     }
 }

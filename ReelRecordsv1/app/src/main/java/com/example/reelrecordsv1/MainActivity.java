@@ -28,17 +28,22 @@ public class MainActivity extends AppCompatActivity {
         signUp = (Button)findViewById(R.id.signUp);
         username = (TextView)findViewById(R.id.username);
         password = (TextView)findViewById(R.id.password);
+        LocalDB.createAccount("admin", "admin");
     }
 
     public void signIn(View view){
-        for(int i = 0; i < 100; i++){
-            if((username.getText().toString() == LocalDB.usernameArray[i]) && (password.getText().toString() == LocalDB.passwordArray[i])) {
+        Boolean found = false;
+        for(int i = 0; i < 100; i++) {
+            if ((username.getText().toString().equals(LocalDB.usernameArray[i])) && (password.getText().toString().equals(LocalDB.passwordArray[i]))) {
                 //allow entry into account
                 Intent intent = new Intent(this, QueryActivity.class);
                 String message = username.getText().toString();
                 intent.putExtra(EXTRA_MESSAGE, message);
                 startActivity(intent);
-            } else {
+                found = true;
+            }
+        }
+        if(found == false) {
                 //alert no such account exists
                 Context context = getApplicationContext();
                 CharSequence text = "Account not found!";
@@ -46,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast toast = Toast.makeText(context, text, duration);
                 toast.show();
             }
-        }
     }
     public void signUp(View view){
                 //alert no such account exists
