@@ -4,6 +4,7 @@ public class LocalDB {
     //variable declarations
     public static String []usernameArray = new String[100];
     public static String []passwordArray = new String[100];
+    public static String temp = "temp";
     private static int count = 0;
     public static void createAccount(String username, String password)
     {
