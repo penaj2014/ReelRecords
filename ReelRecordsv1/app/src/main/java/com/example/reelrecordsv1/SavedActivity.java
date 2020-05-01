@@ -4,60 +4,43 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.BasicNetwork;
-import com.android.volley.toolbox.DiskBasedCache;
-import com.android.volley.toolbox.HurlStack;
-import com.android.volley.toolbox.JsonObjectRequest;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class ResultsActivity extends AppCompatActivity {
+public class SavedActivity extends AppCompatActivity {
     private ArrayList<String> data = new ArrayList<String>();
     private ArrayList<String> imageData = new ArrayList<String>();
-    private int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.results);
-        ListView lv = (ListView) findViewById(R.id.listview);
+        setContentView(R.layout.saved);
+        ListView lv = (ListView) findViewById(R.id.listview2);
         generateListContent();
-        lv.setAdapter(new MyListAdapter(this, R.layout.list_item, data));
+        lv.setAdapter(new MyListAdapter(this, R.layout.list_item2, data));
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(ResultsActivity.this, "List item was clicked at " + position, Toast.LENGTH_SHORT).show();
+                Toast.makeText(SavedActivity.this, "List item was clicked at " + position, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void generateListContent() {
         for (int i = 0; i < 10; i++) {
-            data = LocalDB.results;
-            imageData = LocalDB.images;
+            data = LocalDB.savedText;
+            imageData = LocalDB.savedImages;
         }
     }
 
@@ -88,12 +71,12 @@ public class ResultsActivity extends AppCompatActivity {
             mainViewHolder.button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getContext(), "Saved to Favorites", Toast.LENGTH_SHORT).show();
-                    LocalDB.savedArray(getItem(position), imageData.get(position));
+                    Toast.makeText(getContext(), "Deleted From Favorites", Toast.LENGTH_SHORT).show();
+                    LocalDB.deleteSavedArray(getItem(position), imageData.get(position));
                 }
             });
             mainViewHolder.title.setText(getItem(position));
-                mainViewHolder.thumbnail.loadUrl(imageData.get(position));
+            mainViewHolder.thumbnail.loadUrl(imageData.get(position));
             return convertView;
         }
     }

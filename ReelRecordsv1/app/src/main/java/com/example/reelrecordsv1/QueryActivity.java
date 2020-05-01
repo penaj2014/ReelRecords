@@ -24,8 +24,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class QueryActivity extends AppCompatActivity {
     TextView query;
+    public static Boolean done = false;
     public static final String EXTRA_MESSAGE = "null";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +38,9 @@ public class QueryActivity extends AppCompatActivity {
         //getting the intent that started this activity and extracting the string
         Intent intent = getIntent();
         String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+        LocalDB.currentUser(message);
         Context context = getApplicationContext();
-        CharSequence text = "Welcome " + message + "!";
+        CharSequence text = "Howdy " + LocalDB.currentName + "!";
         int duration = Toast.LENGTH_SHORT;
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
@@ -47,63 +51,94 @@ public class QueryActivity extends AppCompatActivity {
         //allow entry into account
         Intent intent = new Intent(this, ResultsActivity.class);
         String message = query.getText().toString();
+        message = emptySpace(message);
         message = "https://api.themoviedb.org/3/search/movie?api_key=e21ab52dd4c9714064881126c6db3943&language=en-US" +
                 "&query=" + message + "&page=1";
-        Log.d("test", message);
+        Log.d("test", message.substring(0,41));
         intent.putExtra(EXTRA_MESSAGE, message);
         HTTPRequest(message);
-        for(int i = 0 ; i < 900; i++){}
+        for(int i = 0 ; i < 5000; i++){}
         startActivity(intent);
     }
 
-    public void searchAuthor(View v)
-    {
+    public void searchAuthor(View v) {
         //allow entry into account
         Intent intent = new Intent(this, ResultsActivity.class);
         String message = query.getText().toString();
-        message = "https://api.themoviedb.org/3/search/movie?api_key=e21ab52dd4c9714064881126c6db3943&language=en-US" +
-                "&query=" + message + "&page=1";
+        message = emptySpace(message);
+        message = "https://api.themoviedb.org/3/search/person?api_key=e21ab52dd4c9714064881126c6db3943&language=en-US" +
+                "&query=" + message + "&page=1&include_adult=false";
         Log.d("test", message);
+        intent.putExtra(EXTRA_MESSAGE, message);
+        HTTPRequest(message);
+        for(int i = 0 ; i < 5000; i++){}
         startActivity(intent);
     }
 
     public void searchGenre(View v)
     {
         //allow entry into account
-        Intent intent = new Intent(this, QueryActivity.class);
+        Intent intent = new Intent(this, ResultsActivity.class);
         String message = query.getText().toString();
+        message = emptySpace(message);
         message = "https://api.themoviedb.org/3/search/movie?api_key=e21ab52dd4c9714064881126c6db3943&language=en-US" +
                 "&query=" + message + "&page=1";
         Log.d("test", message);
         intent.putExtra(EXTRA_MESSAGE, message);
+        HTTPRequest(message);
+        for(int i = 0 ; i < 5000; i++){}
         startActivity(intent);
     }
 
-    public void HTTPRequest(String url)
+    public void Saved(View v)
+    {
+        //allow entry into account
+        Intent intent = new Intent(this, SavedActivity.class);
+        startActivity(intent);
+    }
+
+    public void HTTPRequest(final String url)
     {
         RequestQueue requestQueue = MySingleton.getInstance(this.getApplicationContext()).getRequestQueue();
         DiskBasedCache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024); // 1MB cap
         BasicNetwork network = new BasicNetwork(new HurlStack());
         requestQueue = new RequestQueue(cache, network);
         // Start the queue
+        Log.d("URL", url);
         requestQueue.start();
         // Formulate the request and handle the response.
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            String s = null;
+                            Log.d("test", url.substring(0,41));
+
+                            ArrayList<String> s = new ArrayList<>();
+                            ArrayList<String> t = new ArrayList<>();
                             JSONArray data = response.getJSONArray("results");
                             int length = response.length();
                             for(int i = 0; i < length; i++)
                             {
                                 JSONObject tempObject = data.getJSONObject(i);
-                                s = tempObject.getString("original_title");
-                                LocalDB.temp = s;
+                                if(url.substring(0,41).equals("https://api.themoviedb.org/3/search/movie"))
+                                {
+                                    String payload = tempObject.getString("title") +"\n" + tempObject.getString("overview");
+                                    s.add(payload);
+                                    payload = "https://image.tmdb.org/t/p/w185/" + tempObject.getString("poster_path");
+                                    t.add(payload);
+                                }
+                                else
+                                {
+                                    String payload = tempObject.getString("name") +"\nKnown for: " + tempObject.getString("known_for_department");
+                                    s.add(payload);
+                                    payload = "https://image.tmdb.org/t/p/w185/" + tempObject.getString("profile_path");
+                                    t.add(payload);
+                                }
+
                             }
-                            Log.d("test1", s);
+                            LocalDB.resultsArray(s, t);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -116,6 +151,15 @@ public class QueryActivity extends AppCompatActivity {
                     }
                 });
         MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
+    }
+    public String emptySpace(String s)
+    {
+        if(s.contains(" "))
+        {
+            int i = s.indexOf(" ");
+             s = s.substring(0,i)+"%20"+s.substring(i+1);
+        }
+        return s;
     }
 }
 

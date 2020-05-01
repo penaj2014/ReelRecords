@@ -28,7 +28,7 @@
         android:layout_marginTop="547dp"
         android:layout_marginEnd="164dp"
         android:layout_marginRight="164dp"
-        android:text="Save" />
+        android:text="delete" />
 
     <WebView
         android:id="@+id/list_item_thumbnail"
