@@ -1,14 +1,21 @@
+/*  Reel Records
+ *   Author: Jorge Pena
+ */
 package com.example.reelrecordsv1;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.LruCache;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
+/*
+MySingleton allows HTTP requests to be called from any.java script by encapsulating
+the RequestQueue.
+ */
 public class MySingleton {
+    //variable declaration
     private static MySingleton instance;
     private RequestQueue requestQueue;
     private ImageLoader imageLoader;

@@ -1,8 +1,10 @@
+/*  Reel Records
+ *   Author: Jorge Pena
+ */
 package com.example.reelrecordsv1;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +19,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/*
+SavedActivity class provides an inflater for the ArrayList containing cached data from LocalDB
+ */
 public class SavedActivity extends AppCompatActivity {
     private ArrayList<String> data = new ArrayList<String>();
     private ArrayList<String> imageData = new ArrayList<String>();
@@ -37,6 +41,10 @@ public class SavedActivity extends AppCompatActivity {
         });
     }
 
+    /*
+    generateListContent()
+    Description: Adds cached data to be used in this instance.
+     */
     private void generateListContent() {
         for (int i = 0; i < 10; i++) {
             data = LocalDB.savedText;
@@ -44,11 +52,19 @@ public class SavedActivity extends AppCompatActivity {
         }
     }
 
+    /*
+   MyListAdapter class
+   Description: Serves to fill the XML file with LocalDB text and poster URL data.
+    */
     private class MyListAdapter extends ArrayAdapter<String> {
         private int layout;
         private List<String> mObjects;
         private List<String> mImages;
 
+        /*
+       MyListAdapter()
+       Description: Default constructor serves to fill the XML file with LocalDB text and poster URL data.
+        */
         private MyListAdapter(Context context, int resource, List<String> objects) {
             super(context, resource, objects);
             mObjects = objects;
@@ -81,6 +97,9 @@ public class SavedActivity extends AppCompatActivity {
         }
     }
 
+    /*
+   ViewHolder class acts as a container to store the view referenced in the XML file.
+    */
     public class ViewHolder {
 
         WebView thumbnail;

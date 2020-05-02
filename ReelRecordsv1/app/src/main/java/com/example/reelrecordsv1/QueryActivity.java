@@ -1,6 +1,7 @@
+/*  Reel Records
+ *   Author: Jorge Pena
+ */
 package com.example.reelrecordsv1;
-
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,7 +9,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
@@ -19,17 +19,20 @@ import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonObjectRequest;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 
+/*
+QueryActivity class links the XML buttons to methods which utilize HTTPRequests that pull JSON Payloads
+for films which were queried.
+ */
 public class QueryActivity extends AppCompatActivity {
     TextView query;
     public static Boolean done = false;
     public static final String EXTRA_MESSAGE = "null";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,13 +42,14 @@ public class QueryActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
         LocalDB.currentUser(message);
-        Context context = getApplicationContext();
-        CharSequence text = "Howdy " + LocalDB.currentName + "!";
-        int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
     }
 
+    /*
+    searchTitle()
+    Description: Concatenates a the main URL link for searching for films by movie title with the entered
+    movie title and then creates an intent.
+    @param View v               onClick button linked to call method
+     */
     public void searchTitle(View v)
     {
         //allow entry into account
@@ -61,6 +65,12 @@ public class QueryActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /*
+    searchAuthor()
+    Description: Concatenates a the main URL link for searching for films by person with the entered
+   name and then creates an intent.
+    @param View v               onClick button linked to call method
+     */
     public void searchAuthor(View v) {
         //allow entry into account
         Intent intent = new Intent(this, ResultsActivity.class);
@@ -75,6 +85,12 @@ public class QueryActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /*
+   searchGenre()
+   Description: Concatenates a the main URL link for searching for films by movie title with the entered
+   movie title and then creates an intent.
+   @param View v               onClick button linked to call method
+    */
     public void searchGenre(View v)
     {
         //allow entry into account
@@ -90,6 +106,11 @@ public class QueryActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /*
+   Saved()
+   Description: Chen creates an intent to see saved queries.
+   @param View v               onClick button linked to call method
+    */
     public void Saved(View v)
     {
         //allow entry into account
@@ -97,13 +118,18 @@ public class QueryActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /*
+   HTTPRequest()
+   Description: Handles the async payload request and reception which is then stored in LocalDB.java
+   @param String url               concatenated url to perform REST API call.
+    */
     public void HTTPRequest(final String url)
     {
+        //Method declaration
         RequestQueue requestQueue = MySingleton.getInstance(this.getApplicationContext()).getRequestQueue();
         DiskBasedCache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024); // 1MB cap
         BasicNetwork network = new BasicNetwork(new HurlStack());
         requestQueue = new RequestQueue(cache, network);
-        // Start the queue
         Log.d("URL", url);
         requestQueue.start();
         // Formulate the request and handle the response.
@@ -114,7 +140,6 @@ public class QueryActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         try {
                             Log.d("test", url.substring(0,41));
-
                             ArrayList<String> s = new ArrayList<>();
                             ArrayList<String> t = new ArrayList<>();
                             JSONArray data = response.getJSONArray("results");
@@ -122,6 +147,7 @@ public class QueryActivity extends AppCompatActivity {
                             for(int i = 0; i < length; i++)
                             {
                                 JSONObject tempObject = data.getJSONObject(i);
+                                //confirms the type of payload to receive by using an if else statement
                                 if(url.substring(0,41).equals("https://api.themoviedb.org/3/search/movie"))
                                 {
                                     String payload = tempObject.getString("title") +"\n" + tempObject.getString("overview");
@@ -152,6 +178,12 @@ public class QueryActivity extends AppCompatActivity {
                 });
         MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
+
+    /*
+   searchTitle
+   Description: Removes the space in between entered queries.
+   @param String s             the string intended to be appended to the main url
+    */
     public String emptySpace(String s)
     {
         if(s.contains(" "))
@@ -162,27 +194,6 @@ public class QueryActivity extends AppCompatActivity {
         return s;
     }
 }
-
-
-//    JSONObject jsonObj = new JSONObject(jsonStr);
-//    JSONArray ja_data = jsonObj.getJSONArray("data");
-//    int length = jsonObj.length();
-//for(int i=0; i<length; i++) {
-//        JSONObject jsonObj = ja_data.getJSONObject(i);
-//        Toast.makeText(this, jsonObj.getString("Name"), Toast.LENGTH_LONG).show();
-//
-//        // getting inner array Ingredients
-//        JSONArray ja = jsonObj.getJSONArray("Ingredients");
-//        int len = ja.length();
-//
-//        ArrayList<String> Ingredients_names = new ArrayList<>();
-//        for(int j=0; j<len; j++) {
-//        JSONObject json = ja.getJSONObject(j);
-//        Ingredients_names.add(json.getString("name"));
-//        }
-//        }
-
-
 
 
 
